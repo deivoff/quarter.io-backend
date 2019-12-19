@@ -45,7 +45,7 @@ base = declarative_base()
 base.query = db_session.query_property()
 
 class Users(base):
-    _tablename_ = 'users'
+    __tablename__ = 'users'
     id_user = Column(Integer, primary_key=True)
     login = Column(String)
     password = Column(String)
