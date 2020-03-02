@@ -34,7 +34,7 @@ if (db_is_empty()):
                    'id_user integer(11) not null,'
                    'login varchar(30),'
                    'password varchar(20),'
-                   'primary key (id));')     
+                   'primary key (id_user));')     
 
 
 #result = engine.execute('select * from users')
@@ -46,18 +46,35 @@ base.query = db_session.query_property()
 
 class Users(base):
     __tablename__ = 'users'
-    id_user = Column(Integer, primary_key=True)
+    id_user = Column(Integer, primary_key=True, autoincrement = True)
     login = Column(String)
     password = Column(String)
 
-class UsersSchema(SQLAlchemyObjectType):
+class UsersType(SQLAlchemyObjectType):
     class Meta:
         model = Users
         interfaces = (relay.Node, )
 
 class UsersConnection(relay.Connection):
     class Meta:
-        node = UsersSchema
+        node = UsersType
+
+class Sensor_dts(base):
+    __tablename__= 'sensor_dts'
+    id_sensor = Column(Integer, primary_key=True, autoincrement = True)
+    mac = Column(String)
+    temp_min = Column(Float)
+    temp_max = Column(Float)
+    temp_avg = Column(Float)
+
+class Sensors_dtsType(SQLAlchemyObjectType):
+    class Meta:
+        model = Sensor_dts
+        interfaces = (relay.Node, )
+
+class Sensors_dtsConnection(relay.Connection):
+    class Meta:
+        node = Sensors_dtsType
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
@@ -65,3 +82,24 @@ class Query(graphene.ObjectType):
 
 schema = graphene.Schema(query=Query)
 
+from flask import Flask
+from flask_graphql import GraphQLView
+
+app = Flask(__name__)
+app.debug = True
+
+app.add_url_rule(
+    '/graphql',
+    view_func=GraphQLView.as_view(
+        'graphql',
+        schema=schema,
+        graphiql=True # for having the GraphiQL interface
+    )
+)
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
+
+if __name__ == '__main__':
+    app.run()
