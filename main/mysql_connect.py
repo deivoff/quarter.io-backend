@@ -7,15 +7,19 @@ connect = str('mysql+pymysql://root:@localhost/qarterdb?host=localhost?port=3306
 # connect = str('mysql+pymysql://'+username+':'+password+
 # '@'+host+'/'+dbname)
 
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import *
 from sqlalchemy.orm import(scoped_session, sessionmaker, relationship, backref)
-from sqlalchemy.ext.declarative import declarative_base
 import graphene
-from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType 
+from graphene import relay
+
 
 engine = create_engine(connect, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
+base = declarative_base()
+base.query = db_session.query_property()
 
 def table_exists(name):
     ret = engine.dialect.has_table(engine, name)
@@ -41,40 +45,7 @@ if (db_is_empty()):
 #for _r in result:
 #    print(_r)
 
-base = declarative_base()
-base.query = db_session.query_property()
-
-class Users(base):
-    __tablename__ = 'users'
-    id_user = Column(Integer, primary_key=True, autoincrement = True)
-    login = Column(String)
-    password = Column(String)
-
-class UsersType(SQLAlchemyObjectType):
-    class Meta:
-        model = Users
-        interfaces = (relay.Node, )
-
-class UsersConnection(relay.Connection):
-    class Meta:
-        node = UsersType
-
-class Sensor_dts(base):
-    __tablename__= 'sensor_dts'
-    id_sensor = Column(Integer, primary_key=True, autoincrement = True)
-    mac = Column(String)
-    temp_min = Column(Float)
-    temp_max = Column(Float)
-    temp_avg = Column(Float)
-
-class Sensors_dtsType(SQLAlchemyObjectType):
-    class Meta:
-        model = Sensor_dts
-        interfaces = (relay.Node, )
-
-class Sensors_dtsConnection(relay.Connection):
-    class Meta:
-        node = Sensors_dtsType
+from graphs.py import *
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
