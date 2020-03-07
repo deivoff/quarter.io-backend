@@ -1,3 +1,5 @@
+from graphene import relay
+from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType 
 from mysql_connect import *
 
 # Put there schemas of db tables on GQL type

@@ -1,9 +1,10 @@
 from pymongo import MongoClient
 
-class mongo_connect():
+class mongo_connect(object):
     connect = ''
     port = ''
 
-    client = MongoClient(connect,port)
-    db = client.sensor_readings
+    def __init__(self):
+        connect = 'localhost'
+        port = '27071'
 
