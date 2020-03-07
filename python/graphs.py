@@ -1,4 +1,4 @@
-
+from mysql_connect import *
 
 # Put there schemas of db tables on GQL type
 
@@ -8,6 +8,7 @@ class Users(base):
     login = Column(String)
     password = Column(String)
     user_profile = Column(Integer)
+    _permitions = Column(Integer)
 
 class UsersType(SQLAlchemyObjectType):
     class Meta:
@@ -25,6 +26,8 @@ class UserProfiles(base):
     first_name = Column(String)
     surname = Column(String)
     address = Column(String)
+    telephone = Column(String)
+    image = Column(String)
     _createdAt = Column(DateTime)
     _updatedAt = Column(DateTime)
 
@@ -42,6 +45,7 @@ class Sensors(base):
     id_sensor = Column(Integer, primary_key=True, autoincrement = True)
     mac = Column(String)
     dtype = Column(Integer)
+    mongo_key = Column(String)
 
 class SensorsType(SQLAlchemyObjectType):
     class Meta:
