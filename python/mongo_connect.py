@@ -1,10 +1,9 @@
-from pymongo import MongoClient
+import mongoengine
+import graphene_mongo
 
-class mongo_connect(object):
-    connect = ''
-    port = ''
+mongoengine.connect(
+    "mongo-test", host="mongomock://localhost", alias="default"
+)
 
-    def __init__(self):
-        connect = 'localhost'
-        port = '27071'
+
 
